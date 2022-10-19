@@ -1,3 +1,4 @@
+package sample;
 /**
     Interface Calculadora com assinatura dos métodos 
  */

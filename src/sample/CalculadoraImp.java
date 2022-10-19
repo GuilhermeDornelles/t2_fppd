@@ -1,3 +1,4 @@
+package sample;
 /**
  * Implementação das funções assinadas na interface
  */
