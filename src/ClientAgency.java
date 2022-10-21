@@ -1,28 +1,40 @@
-package client;
-
-/**
- *  Cliente da calculadora
- */
-
 import java.rmi.Naming;
 import java.util.Scanner;
-
-import models.Account;
-import service.Bank;
 
 public class ClientAgency {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         try {
             // Procura pelo servico da calculadora no IP e porta definidos
-            Bank bank = (Bank) Naming.lookup("rmi://localhost:1099/Server");
+            IBank bank = (IBank) Naming.lookup("rmi://localhost:1099/BankService");
             boolean running = true;
 
             Account account = null;
 
-            System.out.println("Informe o nome do titular conta:");
+            int esc = 0;
+            while (esc != 1 && esc != 2) {
+                System.out.println("1- Criar conta");
+                System.out.println("2- Manipular conta");
+                esc = Integer.parseInt(in.nextLine());
+            }
+
+            if (esc == 1) {
+                System.out.println("Informe o nome do titular:");
+                String name = "";
+                while (name == "") {
+                    name = in.nextLine();
+                }
+                System.out.println("Titular da conta: " + name);
+                account = bank.createAccount(name);
+                System.out.println("Nova conta criada: \n" + account);
+            }
+
+            if(account == null){
+                System.out.println("Informe o nome do titular conta:");
+            }
             while (account == null) {
-                account = bank.getAccount(in.nextLine());
+                String name = in.nextLine();
+                account = bank.getAccount(name);
                 if (account == null) {
                     System.out.println("Conta não encontrada");
                 }
@@ -30,35 +42,26 @@ public class ClientAgency {
             System.out.println("Conta logada!");
 
             do {
-                System.out.println("1 - Abrir conta");
-                System.out.println("2 - Informações da conta");
-                System.out.println("3 - Depositar");
-                System.out.println("4 - Sacar");
-                System.out.println("5 - Consultar saldo");
+                System.out.println("1 - Informações da conta");
+                System.out.println("2 - Depositar");
+                System.out.println("3 - Sacar");
+                System.out.println("4 - Consultar saldo");
                 System.out.println("0 - sair");
-                boolean exec = true;
                 float value;
 
                 int key = Integer.parseInt(in.nextLine());
                 switch (key) {
                     case 1:
-                        System.out.println("Informe o nome do titular:");
-                        String name = "";
-                        while (name == "") {
-                            name = in.nextLine();
-                        }
-                        account = bank.createAccount(name);
-                        System.out.println("Nova conta criada: \n" + account);
-                        break;
-                    case 2:
                         System.out.println("Informações da conta:");
                         System.out.println(account);
                         break;
-                    case 3:
+                    case 2:
+                        System.out.println(account);
                         value = 0;
                         while (value <= 0) {
                             System.out.println("Informe o valor a ser depositado:");
                             value = Float.parseFloat(in.nextLine());
+                            System.out.println("VALOR: " + value);
                             if (value <= 0) {
                                 System.out.println("Valor inválido!");
                             }
@@ -70,7 +73,7 @@ public class ClientAgency {
                             System.out.println("Erro ao efetuar depósito");
                         }
                         break;
-                    case 4:
+                    case 3:
                         value = 0;
                         while (value <= 0) {
                             System.out.println("Informe o valor a ser sacado:");
@@ -86,7 +89,7 @@ public class ClientAgency {
                             System.out.println("Erro ao efetuar depósito");
                         }
                         break;
-                    case 5:
+                    case 4:
                         System.out.println("Saldo da conta:");
                         System.out.println(account.getBalance());
                         break;

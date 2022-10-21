@@ -1,19 +1,13 @@
-package service;
-
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import models.Account;
-
-
-
-public class Bank extends UnicastRemoteObject implements IBank{
+public class Bank extends UnicastRemoteObject implements IBank {
     private int accountCounter;
     private ArrayList<Account> accounts;
-
 
     public Bank() throws RemoteException {
         super();
@@ -25,33 +19,33 @@ public class Bank extends UnicastRemoteObject implements IBank{
     public Account createAccount(String name) {
         Account newAccount = null;
         try {
-            newAccount = new Account(++accountCounter, 0, name);    
+            newAccount = new Account(++accountCounter, 0, name);
         } catch (Exception e) {
             accountCounter--;
-            throw e; 
+            throw e;
         }
         return newAccount;
     }
 
     @Override
     public boolean closeAccount(Account account) {
-        boolean op = this.accounts.remove(account); 
-        
-        if(op){
+        boolean op = this.accounts.remove(account);
+
+        if (op) {
             this.accountCounter--;
         }
-        
+
         return op;
     }
 
     @Override
     public Account getAccount(String name) {
         List<Account> accounts = this.accounts.stream()
-        .filter(a -> a.getname() == name)
-        .collect(Collectors.toList());
+                .filter(a -> a.getname() == name)
+                .collect(Collectors.toList());
 
-        if(accounts.isEmpty()){
-            return accounts.get(0); 
+        if (accounts.isEmpty()) {
+            return accounts.get(0);
         }
 
         return null;
@@ -60,17 +54,17 @@ public class Bank extends UnicastRemoteObject implements IBank{
     @Override
     public boolean withdraw(Account account, float value) {
         float balance = account.getBalance();
-        if(balance > value){
-            account.setBalance(balance-value);
+        if (balance > value) {
+            account.withdraw(balance - value);
             return true;
         }
         return false;
-    }
+    }   
 
     @Override
     public boolean deposit(Account account, float value) {
-        account.setBalance(account.getBalance() + value);
+        account.deposit(value);
         return true;
     }
-       
+
 }
