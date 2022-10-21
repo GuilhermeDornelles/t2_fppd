@@ -4,7 +4,6 @@ import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import models.Account;
@@ -23,10 +22,10 @@ public class Bank extends UnicastRemoteObject implements IBank{
     }
 
     @Override
-    public Account createAccount() {
+    public Account createAccount(String name) {
         Account newAccount = null;
         try {
-            newAccount = new Account(++accountCounter, 0);    
+            newAccount = new Account(++accountCounter, 0, name);    
         } catch (Exception e) {
             accountCounter--;
             throw e; 
@@ -46,9 +45,9 @@ public class Bank extends UnicastRemoteObject implements IBank{
     }
 
     @Override
-    public Account getAccount(int id) {
+    public Account getAccount(String name) {
         List<Account> accounts = this.accounts.stream()
-        .filter(a -> a.getId() == id)
+        .filter(a -> a.getname() == name)
         .collect(Collectors.toList());
 
         if(accounts.isEmpty()){

@@ -2,27 +2,37 @@ package models;
 
 public class Account {
     private int id;
-    private String nome;
-    private float saldo;
+    private String name;
+    private float balance;
 
-    public Account(int id, float saldo){
+    public Account(int id, float balance, String name){
         this.id = id;
-        this.saldo = saldo;
+        this.balance = balance;
     }
 
-    public void setBalance(float saldo) {
-        this.saldo = saldo;
+    public void setBalance(float balance) {
+        this.balance = balance;
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getname() {
+        return this.name;
     }
 
     public float getBalance() {
-        return saldo;
+        return this.balance;
+    }
+
+    @Override
+    public String toString(){
+        String account = "";
+        account += "{";
+        account += "    'id': " + this.id + ",\n";
+        account += "    'nome': '" + this.name + "',\n";
+        account += "    'saldo': '" + this.balance + "'\n}";
+        return account;
     }
 }
