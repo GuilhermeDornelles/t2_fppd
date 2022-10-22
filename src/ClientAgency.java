@@ -3,7 +3,6 @@ import java.util.Scanner;
 
 public class ClientAgency {
     private static Scanner in = new Scanner(System.in);
-
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         try {
@@ -86,5 +85,6 @@ public class ClientAgency {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        in.close();
     }
 }
