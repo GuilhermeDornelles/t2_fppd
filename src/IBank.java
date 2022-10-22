@@ -1,4 +1,5 @@
 import java.rmi.*;
+import java.util.ArrayList;
 
 public interface IBank extends Remote {
     public Account createAccount(String nome, Long uniqueKey) throws RemoteException;

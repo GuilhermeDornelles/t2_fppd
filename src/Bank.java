@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Bank extends UnicastRemoteObject implements IBank {
+
     private int accountCounter;
     private ArrayList<Account> accounts;
     private ArrayList<Long> uniqueRequestKeys;
@@ -21,7 +22,10 @@ public class Bank extends UnicastRemoteObject implements IBank {
     public Account createAccount(String name, Long uniqueKey) {
         if(!checkUniqueRequestKey(uniqueKey)) return null;
         
+        if (!isValidName(name))
+            return null;
         Account newAccount = null;
+        name = name.toUpperCase();
         try {
             newAccount = new Account(++accountCounter, 0, name);
             this.accounts.add(newAccount);
@@ -33,7 +37,8 @@ public class Bank extends UnicastRemoteObject implements IBank {
     }
 
     @Override
-    public boolean closeAccount(Account account) {
+    public boolean closeAccount(String name) {
+        Account account = this.getAccount(name);
         boolean op = this.accounts.remove(account);
 
         if (op) {
@@ -45,11 +50,13 @@ public class Bank extends UnicastRemoteObject implements IBank {
 
     @Override
     public Account getAccount(String name) {
-        List<Account> accounts = this.accounts.stream()
-                .filter(a -> a.getname() == name)
+        if (accountCounter < 1)
+            return null;
+        List<Account> accountsList = this.accounts.stream()
+                .filter(a -> a.getname().toLowerCase().equals(name.toLowerCase()))
                 .collect(Collectors.toList());
 
-        if (accounts.isEmpty()) {
+        if (!accountsList.isEmpty()) {
             return accounts.get(0);
         }
 
@@ -57,16 +64,25 @@ public class Bank extends UnicastRemoteObject implements IBank {
     }
 
     @Override
-    public boolean withdraw(Account account, float value, Long uniqueKey) {
-        if(!checkUniqueRequestKey(uniqueKey)) return false;
-
-        float balance = account.getBalance();
-        if (balance > value) {
-            account.withdraw(balance - value);
+    public boolean isValidName(String name) {
+        if (getAccount(name) == null) {
             return true;
         }
         return false;
-    }   
+    }
+
+    @Override
+    public boolean withdraw(String name, float value, Long uniqueKey) {
+        if(!checkUniqueRequestKey(uniqueKey)) return false;
+
+        Account account = this.getAccount(name);
+        float balance = account.getBalance();
+        if (balance > value) {
+            account.withdraw(value);
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public boolean deposit(Account account, float value, Long uniqueKey) {
@@ -76,11 +92,8 @@ public class Bank extends UnicastRemoteObject implements IBank {
         return true;
     }
 
-    private boolean checkUniqueRequestKey(Long newKey){
-        for (Long key : uniqueRequestKeys) {
-            if (key == newKey) return false;
-        }
-        return uniqueRequestKeys.add(newKey);
+    @Override
+    public ArrayList<Account> getAccounts() {
+        return this.accounts;
     }
-
 }

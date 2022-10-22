@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class Account implements IAccount {
+public class Account implements Serializable {
     private int id;
     private String name;
     private float balance;
@@ -11,34 +11,35 @@ public class Account implements IAccount {
         this.name = name;
     }
 
-    @Override
     public boolean deposit(float value) {
+        System.out.println("DEPOSITANDO");
         this.balance += value;
         return true;
     }
 
-    @Override
     public boolean withdraw(float value) {
-        if(this.balance - value >=0){
-            this.balance -= value;
+        if (this.balance - value >= 0) {
+            this.balance = this.balance - value;
+            System.out.println("SALDO PÓS SAQUE: " + this.balance);
             return true;
         }
         return false;
     }
 
-    @Override
     public int getId() {
         return this.id;
     }
 
-    @Override
     public String getname() {
         return this.name;
     }
 
-    @Override
     public float getBalance() {
         return this.balance;
+    }
+
+    public String getFormattedBalance(){
+        return "Saldo: R$" + this.balance;
     }
 
     @Override
