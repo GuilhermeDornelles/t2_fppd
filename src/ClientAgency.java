@@ -13,7 +13,7 @@ public class ClientAgency {
             Account userAccount = null;
             while (userAccount == null) {
                 try {
-                    userAccount = login(bank);
+                    userAccount = ClientBase.loginAndRegister(bank);
                 } catch (Exception e) {
                     System.out.println("Erro de conexão. Tente novamente.");
                     System.out.println(e);
@@ -43,8 +43,8 @@ public class ClientAgency {
                                 System.out.println("Valor inválido!");
                             }
                         }
-                        boolean deposit = deposit(userAccount.getname(), bank, value);
-                        userAccount = fetchAccount(userAccount.getname(), bank);
+                        boolean deposit = ClientBase.deposit(userAccount.getname(), bank, value);
+                        userAccount = ClientBase.fetchAccount(userAccount.getname(), bank);
                         if (deposit) {
                             System.out.println(
                                     "Deposito efetuado com sucesso!\n" + userAccount.getFormattedBalance());
@@ -61,8 +61,8 @@ public class ClientAgency {
                                 System.out.println("Valor inválido!");
                             }
                         }
-                        boolean withdraw = withdraw(userAccount.getname(), bank, value);
-                        userAccount = fetchAccount(userAccount.getname(), bank);
+                        boolean withdraw = ClientBase.withdraw(userAccount.getname(), bank, value);
+                        userAccount = ClientBase.fetchAccount(userAccount.getname(), bank);
                         if (withdraw) {
                             System.out.println(
                                     "Saque efetuado com sucesso!\n" + userAccount.getFormattedBalance());
@@ -71,7 +71,7 @@ public class ClientAgency {
                         }
                         break;
                     case 4:
-                        userAccount = fetchAccount(userAccount.getname(), bank);
+                        userAccount = ClientBase.fetchAccount(userAccount.getname(), bank);
                         System.out.println(userAccount.getFormattedBalance());
                         break;
                     case 0:
@@ -86,71 +86,5 @@ public class ClientAgency {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static Account login(IBank bank) throws RemoteException {
-        int esc = 0;
-        while (esc != 1 && esc != 2) {
-            Utils.printMenu(Arrays.asList("Criar conta", "Manipular conta"), false);
-            esc = Integer.parseInt(in.nextLine());
-        }
-        Account accountLogged = null;
-        if (esc == 1) {
-            System.out.println("Informe o nome do titular:");
-            String name = "";
-            while (name == "") {
-                name = in.nextLine();
-            }
-
-            accountLogged = bank.createAccount(name);
-            if (accountLogged != null) {
-                System.out.println("Nova conta criada: \n" + accountLogged);
-                System.out.println("Titular da conta: " + name);
-            } else {
-                System.out.println("Titular já possui conta!");
-            }
-            return accountLogged;
-        }
-
-        System.out.println("Informe o nome do titular da conta:");
-        String name = in.nextLine();
-        accountLogged = bank.getAccount(name);
-        if (accountLogged == null) {
-            System.out.println("Conta não encontrada");
-        }
-        return accountLogged;
-    }
-
-    public static Account fetchAccount(String name, IBank bank) {
-        try {
-            return bank.getAccount(name);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return null;
-    }
-
-    public static boolean deposit(String name, IBank bank, float value) {
-        try {
-            boolean deposit = bank.deposit(name, value);
-            if (deposit) {
-                return true;
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return false;
-    }
-
-    public static boolean withdraw(String name, IBank bank, float value) {
-        try {
-            boolean withdraw = bank.withdraw(name, value);
-            if (withdraw) {
-                return true;
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return false;
     }
 }
