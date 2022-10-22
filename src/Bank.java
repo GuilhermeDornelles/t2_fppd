@@ -77,7 +77,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
                 .collect(Collectors.toList());
 
         if (!accountsList.isEmpty()) {
-            return accounts.get(0);
+            return accountsList.get(0);
         }
         Utils.printRequest("getAccount", null, LocalDateTime.now());
         return null;
