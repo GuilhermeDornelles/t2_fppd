@@ -44,11 +44,6 @@ public class Account implements Serializable {
 
     @Override
     public String toString() {
-        String account = "";
-        account += "{\n";
-        account += "    'id': " + this.id + ",\n";
-        account += "    'titular': '" + this.name + "',\n";
-        account += "    'saldo': '" + this.balance + "'\n}";
-        return account;
+        return String.format("{\n    'id': %d;\n    'titular': %s;\n    'saldo': %.2f\n}", this.id, this.name, this.balance);
     }
 }
