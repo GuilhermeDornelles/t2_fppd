@@ -2,17 +2,17 @@ import java.rmi.Naming;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class ClientAgency {
+public class ClientAtm {
     private static Scanner in = new Scanner(System.in);
     public static void main(String[] args) {
         try {
             // Procura pelo servico do Banco no IP e porta definidos
-            IBank bank = (IBank) Naming.lookup("rmi://192.168.0.180:1099/BankService");
+            IBank bank = (IBank) Naming.lookup("rmi://localhost:1099/BankService");
             boolean running = true;
             Account userAccount = null;
             while (userAccount == null) {
                 try {
-                    userAccount = ClientBase.loginAndRegister(bank);
+                    userAccount = ClientBase.login(bank);
                 } catch (Exception e) {
                     System.out.println("Erro de conexão. Tente novamente.");
                     System.out.println(e);
