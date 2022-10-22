@@ -2,6 +2,11 @@ import java.rmi.Naming;
 import java.util.Scanner;
 
 public class ClientAgency {
+
+    public static long createUniqueKey(){
+        return System.currentTimeMillis();
+    }
+
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         try {
@@ -25,7 +30,7 @@ public class ClientAgency {
                     name = in.nextLine();
                 }
                 System.out.println("Titular da conta: " + name);
-                account = bank.createAccount(name);
+                account = bank.createAccount(name, createUniqueKey());
                 System.out.println("Nova conta criada: \n" + account);
             }
 
@@ -66,7 +71,7 @@ public class ClientAgency {
                                 System.out.println("Valor inválido!");
                             }
                         }
-                        boolean deposit = bank.deposit(account, value);
+                        boolean deposit = bank.deposit(account, value, createUniqueKey());
                         if (deposit) {
                             System.out.println("Deposito efetuado com sucesso! Saldo atual: " + account.getBalance());
                         } else {
@@ -82,7 +87,7 @@ public class ClientAgency {
                                 System.out.println("Valor inválido!");
                             }
                         }
-                        boolean withdraw = bank.withdraw(account, value);
+                        boolean withdraw = bank.withdraw(account, value, createUniqueKey());
                         if (withdraw) {
                             System.out.println("Saque efetuado com sucesso! Saldo atual: " + account.getBalance());
                         } else {
@@ -105,5 +110,6 @@ public class ClientAgency {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        in.close();
     }
 }
