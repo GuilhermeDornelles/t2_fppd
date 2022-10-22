@@ -52,6 +52,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
             return newAccount;
         } catch (Exception e) {
             System.out.println("ERROR IN CREATE ACCOUNT: " + e);
+            semaphore.release();
             return null;
         }
     }
@@ -93,30 +94,49 @@ public class Bank extends UnicastRemoteObject implements IBank {
 
     @Override
     public boolean withdraw(String name, float value, Long uniqueKey) {
-        Account account = this.getAccount(name);
-        if (!checkUniqueRequestKey(uniqueKey)) {
+        try {
+            semaphore.acquire();
+            Account account = this.getAccount(name);
+            if (!checkUniqueRequestKey(uniqueKey)) {
+                Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
+                semaphore.release();
+                return false;
+            }
+
+            float balance = account.getBalance();
+            if (balance > value) {
+                account.withdraw(value);
+                Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
+                semaphore.release();
+                return true;
+            }
             Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
+            semaphore.release();
+            return false;
+        } catch (Exception e) {
+            System.out.println("ERROR IN WITHDRAW: " + e);
+            semaphore.release();
             return false;
         }
-
-        float balance = account.getBalance();
-        if (balance > value) {
-            account.withdraw(value);
-            Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
-            return true;
-        }
-        Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
-        return false;
     }
 
     @Override
     public boolean deposit(String name, float value, Long uniqueKey) {
-        if (!checkUniqueRequestKey(uniqueKey)) {
+        try {
+            semaphore.acquire();
+            if (!checkUniqueRequestKey(uniqueKey)) {
+                Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
+                semaphore.release();
+                return false;
+            }
             Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
+            semaphore.release();
+            return this.getAccount(name).deposit(value);   
+        } catch (Exception e) {
+            System.out.println("ERROR IN DEPOSIT: " + e);
+            semaphore.release();
             return false;
         }
-        Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
-        return this.getAccount(name).deposit(value);
     }
 
     private boolean checkUniqueRequestKey(Long newKey) {

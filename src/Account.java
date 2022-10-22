@@ -1,28 +1,50 @@
 import java.io.Serializable;
+import java.util.concurrent.Semaphore;
 
 public class Account implements Serializable {
+    private Semaphore semaphore;
+    private int slotsLimit = 1;
     private int id;
     private String name;
     private float balance;
 
     public Account(int id, float balance, String name) {
+        this.semaphore = new Semaphore(slotsLimit);
         this.id = id;
         this.balance = balance;
         this.name = name;
     }
 
     public boolean deposit(float value) {
-        this.balance += value;
-        return true;
+        try {
+            semaphore.acquire();
+            this.balance += value;
+            semaphore.release();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error in deposit: " + e);
+            return false;
+        }
     }
 
     public boolean withdraw(float value) {
-        if (this.balance - value >= 0) {
-            this.balance = this.balance - value;
-            System.out.println("SALDO PÓS SAQUE: " + this.balance);
-            return true;
+        
+
+        try {
+            semaphore.acquire();
+            if (this.balance - value >= 0) {
+                this.balance = this.balance - value;
+                System.out.println("SALDO PÓS SAQUE: " + this.balance);
+                semaphore.release();
+                return true;
+            }
+            semaphore.release();
+            return false;
+
+        } catch (Exception e) {
+            System.out.println("Error in withdraw: " + e);
+            return false;
         }
-        return false;
     }
 
     public int getId() {
