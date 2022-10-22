@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Bank extends UnicastRemoteObject implements IBank {
+
     private int accountCounter;
     private ArrayList<Account> accounts;
 
@@ -17,9 +18,13 @@ public class Bank extends UnicastRemoteObject implements IBank {
 
     @Override
     public Account createAccount(String name) {
+        if (!isValidName(name))
+            return null;
         Account newAccount = null;
+        name = name.toUpperCase();
         try {
             newAccount = new Account(++accountCounter, 0, name);
+            this.accounts.add(newAccount);
         } catch (Exception e) {
             accountCounter--;
             throw e;
@@ -28,7 +33,8 @@ public class Bank extends UnicastRemoteObject implements IBank {
     }
 
     @Override
-    public boolean closeAccount(Account account) {
+    public boolean closeAccount(String name) {
+        Account account = this.getAccount(name);
         boolean op = this.accounts.remove(account);
 
         if (op) {
@@ -40,9 +46,10 @@ public class Bank extends UnicastRemoteObject implements IBank {
 
     @Override
     public Account getAccount(String name) {
-        if(accountCounter < 1) return null;
+        if (accountCounter < 1)
+            return null;
         List<Account> accountsList = this.accounts.stream()
-                .filter(a -> a.getname() == name)
+                .filter(a -> a.getname().toLowerCase().equals(name.toLowerCase()))
                 .collect(Collectors.toList());
 
         if (!accountsList.isEmpty()) {
@@ -53,19 +60,33 @@ public class Bank extends UnicastRemoteObject implements IBank {
     }
 
     @Override
-    public boolean withdraw(Account account, float value) {
-        float balance = account.getBalance();
-        if (balance > value) {
-            account.withdraw(balance - value);
+    public boolean isValidName(String name) {
+        if (getAccount(name) == null) {
             return true;
         }
         return false;
-    }   
+    }
 
     @Override
-    public boolean deposit(Account account, float value) {
+    public boolean withdraw(String name, float value) {
+        Account account = this.getAccount(name);
+        float balance = account.getBalance();
+        if (balance > value) {
+            account.withdraw(value);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deposit(String name, float value) {
+        Account account = this.getAccount(name);
         account.deposit(value);
         return true;
     }
 
+    @Override
+    public ArrayList<Account> getAccounts() {
+        return this.accounts;
+    }
 }
