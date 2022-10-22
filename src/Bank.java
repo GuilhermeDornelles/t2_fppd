@@ -40,12 +40,13 @@ public class Bank extends UnicastRemoteObject implements IBank {
 
     @Override
     public Account getAccount(String name) {
-        List<Account> accounts = this.accounts.stream()
+        if(accountCounter < 1) return null;
+        List<Account> accountsList = this.accounts.stream()
                 .filter(a -> a.getname() == name)
                 .collect(Collectors.toList());
 
-        if (accounts.isEmpty()) {
-            return accounts.get(0);
+        if (!accountsList.isEmpty()) {
+            return accountsList.get(0);
         }
 
         return null;

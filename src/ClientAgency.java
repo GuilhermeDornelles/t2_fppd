@@ -1,43 +1,23 @@
 import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ClientAgency {
+    private static Scanner in = new Scanner(System.in);
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
         try {
-            // Procura pelo servico da calculadora no IP e porta definidos
+            // Procura pelo servico do Banco no IP e porta definidos
             IBank bank = (IBank) Naming.lookup("rmi://localhost:1099/BankService");
             boolean running = true;
-
-            Account account = null;
-
-            int esc = 0;
-            while (esc != 1 && esc != 2) {
-                System.out.println("1- Criar conta");
-                System.out.println("2- Manipular conta");
-                esc = Integer.parseInt(in.nextLine());
-            }
-
-            if (esc == 1) {
-                System.out.println("Informe o nome do titular:");
-                String name = "";
-                while (name == "") {
-                    name = in.nextLine();
-                }
-                System.out.println("Titular da conta: " + name);
-                account = bank.createAccount(name);
-                System.out.println("Nova conta criada: \n" + account);
-            }
-
-            if(account == null){
-                System.out.println("Informe o nome do titular conta:");
-            }
-            while (account == null) {
-                String name = in.nextLine();
-                account = bank.getAccount(name);
-                if (account == null) {
-                    System.out.println("Conta não encontrada");
-                }
+            Account userAccount = null;
+            try {
+                userAccount = login(bank);
+            } catch (Exception e) {
+                System.out.println("Erro de conexão. Tente novamente.");
+                System.out.println(e);
+                return;
             }
             System.out.println("Conta logada!");
 
@@ -53,10 +33,10 @@ public class ClientAgency {
                 switch (key) {
                     case 1:
                         System.out.println("Informações da conta:");
-                        System.out.println(account);
+                        System.out.println(userAccount);
                         break;
                     case 2:
-                        System.out.println(account);
+                        System.out.println(userAccount);
                         value = 0;
                         while (value <= 0) {
                             System.out.println("Informe o valor a ser depositado:");
@@ -66,9 +46,9 @@ public class ClientAgency {
                                 System.out.println("Valor inválido!");
                             }
                         }
-                        boolean deposit = bank.deposit(account, value);
+                        boolean deposit = bank.deposit(userAccount, value);
                         if (deposit) {
-                            System.out.println("Deposito efetuado com sucesso! Saldo atual: " + account.getBalance());
+                            System.out.println("Deposito efetuado com sucesso! Saldo atual: " + userAccount.getBalance());
                         } else {
                             System.out.println("Erro ao efetuar depósito");
                         }
@@ -82,16 +62,16 @@ public class ClientAgency {
                                 System.out.println("Valor inválido!");
                             }
                         }
-                        boolean withdraw = bank.withdraw(account, value);
+                        boolean withdraw = bank.withdraw(userAccount, value);
                         if (withdraw) {
-                            System.out.println("Saque efetuado com sucesso! Saldo atual: " + account.getBalance());
+                            System.out.println("Saque efetuado com sucesso! Saldo atual: " + userAccount.getBalance());
                         } else {
                             System.out.println("Erro ao efetuar depósito");
                         }
                         break;
                     case 4:
                         System.out.println("Saldo da conta:");
-                        System.out.println(account.getBalance());
+                        System.out.println(userAccount.getBalance());
                         break;
                     case 0:
                         running = false;
@@ -106,4 +86,36 @@ public class ClientAgency {
             e.printStackTrace();
         }
     }
+
+    private static Account login(IBank bank) throws RemoteException{
+        int esc = 0;
+        while (esc != 1 && esc != 2) {
+            Utils.printMenu(Arrays.asList("Criar conta", "Manipular conta"));
+            esc = Integer.parseInt(in.nextLine());
+        }
+        Account accountLogged = null;
+        if (esc == 1) {
+            System.out.println("Informe o nome do titular:");
+            String name = "";
+            while (name == "") {
+                name = in.nextLine();
+            }
+            System.out.println("Titular da conta: " + name);
+            accountLogged = bank.createAccount(name);
+            System.out.println("Nova conta criada: \n" + accountLogged);
+        }
+
+        if(accountLogged == null){
+            System.out.println("Informe o nome do titular da conta:");
+        }
+        while (accountLogged == null) {
+            String name = in.nextLine();
+            accountLogged = bank.getAccount(name);
+            if (accountLogged == null) {
+                System.out.println("Conta não encontrada");
+            }
+        }
+        return accountLogged;
+    }
 }
+
