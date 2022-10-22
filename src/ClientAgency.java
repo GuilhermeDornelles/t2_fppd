@@ -1,4 +1,5 @@
 import java.rmi.Naming;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ClientAgency {
@@ -30,7 +31,7 @@ public class ClientAgency {
                 switch (key) {
                     case 1:
                         System.out.println("Informações da conta:");
-                        System.out.println(account);
+                        System.out.println(userAccount);
                         break;
                     case 2:
                         value = 0;
