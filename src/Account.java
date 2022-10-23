@@ -23,6 +23,7 @@ public class Account implements Serializable {
             return true;
         } catch (Exception e) {
             System.out.println("Error in deposit: " + e);
+            semaphore.release();
             return false;
         }
     }
