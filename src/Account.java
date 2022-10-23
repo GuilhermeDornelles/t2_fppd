@@ -28,8 +28,6 @@ public class Account implements Serializable {
     }
 
     public boolean withdraw(float value) {
-        
-
         try {
             semaphore.acquire();
             if (this.balance - value >= 0) {

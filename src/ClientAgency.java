@@ -14,7 +14,7 @@ public class ClientAgency {
                 Account userAccount = null;
                 while (userAccount == null) {
                     try {
-                        userAccount = ClientBase.loginAndRegister(bank);
+                        userAccount = ClientBase.loginAndManageAccounts(bank);
                     } catch (Exception e) {
                         System.out.println("Erro de conexão. Tente novamente.");
                         System.out.println(e);

@@ -21,11 +21,11 @@ public class ClientBase {
 
     }
 
-    public static Account loginAndRegister(IBank bank) {
+    public static Account loginAndManageAccounts(IBank bank) {
         try {
             int esc = 0;
-            while (esc != 1 && esc != 2) {
-                Utils.printMenu(Arrays.asList("Criar conta", "Manipular conta"), false);
+            while (esc != 1 && esc != 2 && esc != 3) {
+                Utils.printMenu(Arrays.asList("Criar conta", "Manipular conta", "Fechar conta"), false);
                 esc = Integer.parseInt(in.nextLine());
             }
             Account accountLogged = null;
@@ -45,6 +45,21 @@ public class ClientBase {
                 }
                 return accountLogged;
             }
+            else if (esc == 3){
+                System.out.println("Informe o nome do titular que deseja fechar:");
+                String name = "";
+                while (name == "") {
+                    name = in.nextLine();
+                }
+                boolean accountRemoved = bank.closeAccount(name);
+                if(accountRemoved){
+                    System.out.println("Conta fechada com sucesso!");
+                }
+                else{
+                    System.out.println("Nao foi possivel fechar a conta. Tente novamente.");
+                }
+                return loginAndManageAccounts(bank);
+            }
 
             System.out.println("Informe o nome do titular da conta:");
             String name = in.nextLine();
@@ -60,7 +75,7 @@ public class ClientBase {
 
     }
 
-    public static Account fetchAccount(String name, IBank bank) {
+    private static Account fetchAccount(String name, IBank bank) {
         try {
             return bank.getAccount(name);
         } catch (Exception e) {
@@ -69,7 +84,7 @@ public class ClientBase {
         return null;
     }
 
-    public static boolean deposit(String name, IBank bank, float value) {
+    private static boolean deposit(String name, IBank bank, float value) {
         try {
             boolean deposit = bank.deposit(name, value, Utils.createUniqueKey(String.format("%s %f", name, value)));
             if (deposit) {
@@ -81,7 +96,7 @@ public class ClientBase {
         return false;
     }
 
-    public static boolean withdraw(String name, IBank bank, float value) {
+    private static boolean withdraw(String name, IBank bank, float value) {
         try {
             boolean withdraw = bank.withdraw(name, value, Utils.createUniqueKey(String.format("%s %f", name, value)));
             if (withdraw) {
