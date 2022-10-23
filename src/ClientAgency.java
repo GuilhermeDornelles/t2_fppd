@@ -61,6 +61,7 @@ public class ClientAgency {
                                 System.out.println("Valor inválido!");
                             }
                         }
+                        userAccount = ClientBase.fetchAccount(userAccount.getname(), bank);
                         boolean withdraw = ClientBase.withdraw(userAccount.getname(), bank, value);
                         userAccount = ClientBase.fetchAccount(userAccount.getname(), bank);
                         if (withdraw) {
