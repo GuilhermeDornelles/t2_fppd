@@ -30,6 +30,7 @@ public class ClientAtm {
                 switch (key) {
                     case 1:
                         System.out.println("Informações da conta:");
+                        userAccount = ClientBase.fetchAccount(userAccount.getname(), bank);
                         System.out.println(userAccount);
                         break;
                     case 2:

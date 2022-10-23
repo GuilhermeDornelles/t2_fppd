@@ -7,7 +7,7 @@ public class ClientAgency {
     public static void main(String[] args) {
         try {
             // Procura pelo servico do Banco no IP e porta definidos
-            IBank bank = (IBank) Naming.lookup("rmi://192.168.0.180:1099/BankService");
+            IBank bank = (IBank) Naming.lookup("rmi://localhost:1099/BankService");
             boolean running = true;
             Account userAccount = null;
             while (userAccount == null) {
@@ -30,6 +30,7 @@ public class ClientAgency {
                 switch (key) {
                     case 1:
                         System.out.println("Informações da conta:");
+                        userAccount = ClientBase.fetchAccount(userAccount.getname(), bank);
                         System.out.println(userAccount);
                         break;
                     case 2:
