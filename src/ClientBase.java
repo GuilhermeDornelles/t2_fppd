@@ -92,4 +92,96 @@ public class ClientBase {
         }
         return false;
     }
+
+    public static Account getAccountInfo(Account userAcc, IBank bank){
+        System.out.println("Informações da conta:");
+        Account userAccount = ClientBase.fetchAccount(userAcc.getname(), bank);
+        System.out.println(userAccount);
+        return userAccount;
+    }
+
+    public static Account executeDeposit(Account userAcc, IBank bank){
+        float value = 0;
+        while (value <= 0) {
+            System.out.println("Informe o valor a ser depositado:");
+            value = Float.parseFloat(in.nextLine());
+            System.out.println("VALOR: " + value);
+            if (value <= 0) {
+                System.out.println("Valor inválido!");
+            }
+        }
+        boolean deposit = ClientBase.deposit(userAcc.getname(), bank, value);
+        Account userAccount = ClientBase.fetchAccount(userAcc.getname(), bank);
+        if (deposit) {
+            System.out.println(
+                    "Deposito efetuado com sucesso!\n" + userAccount.getFormattedBalance());
+        } else {
+            System.out.println("Erro ao efetuar depósito");
+        }
+        return userAccount;
+    }
+
+    public static Account executeWithdraw(Account userAcc, IBank bank){
+        float value = 0;
+        while (value <= 0) {
+            System.out.println("Informe o valor a ser sacado:");
+            value = Float.parseFloat(in.nextLine());
+            if (value <= 0) {
+                System.out.println("Valor inválido!");
+            }
+        }
+        boolean withdraw = ClientBase.withdraw(userAcc.getname(), bank, value);
+        Account userAccount = ClientBase.fetchAccount(userAcc.getname(), bank);
+        if (withdraw) {
+            System.out.println(
+                    "Saque efetuado com sucesso!\n" + userAccount.getFormattedBalance());
+        } else {
+            System.out.println("Erro ao efetuar saque");
+        }
+        return userAccount;
+    }
+
+    public static Account getBalance(Account userAcc, IBank bank){
+        Account userAccount = ClientBase.fetchAccount(userAcc.getname(), bank);
+        System.out.println(userAccount.getFormattedBalance());
+        return userAccount;
+    }
+
+    public static boolean run(Account userAccount, IBank bank){
+        boolean running = true;
+        do {
+            Utils.printMenu(Arrays.asList("Informações da conta", "Depositar", "Sacar", "Consultar saldo"), true);
+            
+            int key = Integer.parseInt(in.nextLine());
+            switch (key) {
+                case 1:
+                userAccount = ClientBase.getAccountInfo(userAccount, bank);
+                break;
+            case 2:
+                userAccount = ClientBase.executeDeposit(userAccount, bank);
+                break;
+            case 3:
+                userAccount = ClientBase.executeWithdraw(userAccount, bank);
+                break;
+            case 4:
+                userAccount = ClientBase.getBalance(userAccount, bank);
+                break;
+            case 0:
+                running = false;
+                System.out.println("Saindo da conta...");
+                break;
+            default:
+                running = false;
+                System.out.println("Saindo da conta...");
+                break;
+            }
+        } while (running);
+        return running;
+    }
+
+    public static boolean proceedToNewLoginOrNot(){
+        System.out.println("Deseja fazer login novamente?");
+        String input = in.nextLine().trim().substring(0, 1);
+        return input.equalsIgnoreCase("s") || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("1");
+    }
 }
