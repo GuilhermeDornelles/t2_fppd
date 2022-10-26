@@ -1,5 +1,4 @@
 import java.rmi.Naming;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class ClientAtm {

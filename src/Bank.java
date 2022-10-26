@@ -104,7 +104,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
             }
 
             float balance = account.getBalance();
-            if (balance > value) {
+            if (balance >= value) {
                 account.withdraw(value);
                 Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
                 semaphore.release();
@@ -125,11 +125,11 @@ public class Bank extends UnicastRemoteObject implements IBank {
         try {
             semaphore.acquire();
             if (!checkUniqueRequestKey(uniqueKey)) {
-                Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
+                Utils.printRequest("deposit", uniqueKey, LocalDateTime.now());
                 semaphore.release();
                 return false;
             }
-            Utils.printRequest("withDraw", uniqueKey, LocalDateTime.now());
+            Utils.printRequest("deposit", uniqueKey, LocalDateTime.now());
             semaphore.release();
             return this.getAccount(name).deposit(value);   
         } catch (Exception e) {
